@@ -1,10 +1,10 @@
-#! /usr/bin/python
-
 import subprocess
 import time
+from pexpect import pxssh
+from logzero import logger
 
 BORG_PASSPHRASE = "xxx"
-date = str(time.strftime("%Y.%m.%d_%H:%M:%S"))
+date = str(time.strftime("%Y-%m-%d_%H:%M:%S"))
 ssh_port = 22
 borg_ssh_port = 9923
 ssh_username = "edo"
@@ -27,22 +27,22 @@ backup_server_all = [
 ]
 
 
-def shellCmd(cmd):
-    print "\nCMD: \n" + cmd
+def shell_cmd(cmd):
+    logger.info("\nCMD: \n" + cmd)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (output, err) = proc.communicate()
     if output is not None:
         if len(output) > 0:
-            print output
+            logger.info(output)
     if err is not None:
         if len(err) > 0:
-            print err
+            logger.info(err)
     return output
 
 
-def connectSsh(host_address, ssh_port, borg_ssh_port, ssh_username, cmd):
+def connect_ssh(host_address, ssh_port, borg_ssh_port, ssh_username, cmd):
     ssh_cmd = '/usr/bin/ssh %s@%s -p %s -R %s:localhost:%s "%s"' % (ssh_username, host_address, ssh_port, borg_ssh_port, ssh_port, cmd)
-    shellCmd(ssh_cmd)
+    shell_cmd(ssh_cmd)
 
 
 def backup(host_name, host_address, borg_passphrase, backup_include, backup_exclude):
@@ -51,8 +51,9 @@ def backup(host_name, host_address, borg_passphrase, backup_include, backup_excl
     borg_create = "borg create --compression lz4 -v --stats %s::%s-%s %s %s" % (repository, host_name, date, " ".join(backup_include_default + backup_include), " --exclude ".join(backup_exclude_default + backup_exclude))
     borg_prune = "borg prune -v %s --prefix %s --keep-daily=7 --keep-weekly=4 --keep-monthly=6" % (repository, host_name)
 
-    connectSsh(host_address, ssh_port, borg_ssh_port, ssh_username, borg_pass + borg_create)
-    connectSsh(host_address, ssh_port, borg_ssh_port, ssh_username, borg_pass + borg_prune)
+    connect_ssh(host_address, ssh_port, borg_ssh_port, ssh_username, borg_pass + borg_create)
+    connect_ssh(host_address, ssh_port, borg_ssh_port, ssh_username, borg_pass + borg_prune)
 
-for host_name, host_address, borg_passphrase, backup_include, backup_exclude in backup_server_all:
-    backup(host_name, host_address, borg_passphrase, backup_include, backup_exclude)
+if __name__ == '__main__':
+    for host_name, host_address, borg_passphrase, backup_include, backup_exclude in backup_server_all:
+        backup(host_name, host_address, borg_passphrase, backup_include, backup_exclude)
