@@ -9,4 +9,8 @@ if [ ! -z "${ROOT_PASSWORD}" ] && [ "${ROOT_PASSWORD}" != "root" ]; then
 fi
 
 # do not detach (-D), log to stderr (-e), passthrough other arguments
-exec /usr/sbin/sshd -D -e "$@"
+# exec /usr/sbin/sshd -D -e "$@"
+
+# exec python /app/borg_scheduler.py
+
+exec supervisord -c /etc/supervisord.conf
