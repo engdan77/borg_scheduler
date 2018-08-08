@@ -31,12 +31,18 @@ backup_exclude_default = []
 # ]
 
 
+# backup_list = [{'name': 'server1',
+#                 'username': 'edo',
+#                 'address': 'xxx',
+#                 'backup_dirs': ['/tmp'],
+#                 'exclude_dirs': []}]
 
 backup_list = [{'name': 'server1',
-                'username': 'edo',
-                'address': 'xxx',
+                'username': 'pi',
+                'address': '10.1.1.1',
                 'backup_dirs': ['/tmp'],
                 'exclude_dirs': []}]
+
 
 def exception_listener(event):
     if event.exception:

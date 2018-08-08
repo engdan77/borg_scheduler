@@ -23,6 +23,8 @@ COPY entrypoint.sh /
 COPY requirements.txt /app/
 COPY borg_scheduler.py /app/
 
+COPY ssh_config /root/.ssh/config
+
 RUN apk add borgbackup
 
 RUN mkdir -p /borg
