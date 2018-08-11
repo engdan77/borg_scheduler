@@ -4,11 +4,10 @@ LABEL maintainer="Daniel Engvall"
 
 ENV ROOT_PASSWORD root
 
+# Update according to local environment or use --build-arg UID=xxx at build
 ENV UID 1004
 ENV GID 100
 
-# RUN addgroup -g $GID appgroupd
-# RUN adduser -u $UID -D -G appgroup appuser
 RUN adduser -u ${UID} -D -g '' appuser
 
 RUN apk update	&& apk upgrade && apk add bash && apk add openssh \
