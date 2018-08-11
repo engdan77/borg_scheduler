@@ -15,7 +15,7 @@ import json
 
 SERVER_SSH_PORT = os.environ.get('SSH_PORT', 22)
 BORG_SSH_PORT = os.environ.get('BORG_SSH_PORT', 9922)
-SERVER_USERNAME = os.environ.get('SERVER_USERNAME', 'root')
+SERVER_USERNAME = os.environ.get('SERVER_USERNAME', 'appuser')
 BASE_REPO = os.environ.get('BASE_REPO', "/borg")
 MINUTES_BETWEEN_BACKUPS = 1440
 

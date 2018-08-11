@@ -36,12 +36,13 @@ RUN chown -R appuser /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-COPY ssh_config /home/appuser/.ssh/config
-
 RUN mkdir -p /borg
 RUN chown -R appuser /borg
 
+RUN passwd -d 'root' appuser
+
 USER appuser
+COPY ssh_config /home/appuser/.ssh/config
 
 EXPOSE 22
 
