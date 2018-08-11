@@ -169,5 +169,9 @@ if __name__ == '__main__':
         backup_args = (c['name'], c['address'], c['backup_dirs'], c['exclude_dirs'], c['username'], c['password'])
         prepare_client(f'{BASE_REPO}/{c["name"]}', c['username'], SERVER_USERNAME, c['address'], BORG_SSH_PORT,
                        c['password'])
+
+    for c in backup_list:
+        backup_args = (c['name'], c['address'], c['backup_dirs'], c['exclude_dirs'], c['username'], c['password'])
+        backup(*backup_args)
         scheduler.add_job(backup, 'interval', args=backup_args, minutes=MINUTES_BETWEEN_BACKUPS, id=f'job_{c["name"]}')
     scheduler.start()
