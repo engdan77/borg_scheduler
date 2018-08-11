@@ -19,6 +19,8 @@ SERVER_USERNAME = os.environ.get('SERVER_USERNAME', 'appuser')
 BASE_REPO = os.environ.get('BASE_REPO', "/borg")
 MINUTES_BETWEEN_BACKUPS = 1440
 PEXPECT_TIMEOUT_SECONDS = 21600
+COMPRESSION = 'none'
+# COMPRESSION = 'lz4'
 
 backup_include_default = []
 backup_exclude_default = []
@@ -153,7 +155,7 @@ def backup(host_name, host_address, backup_include, backup_exclude, client_usern
     """
     repository = "ssh://%s@localhost:%s/%s" % (SERVER_USERNAME, BORG_SSH_PORT, f'{BASE_REPO}/{host_name}')
     date = str(time.strftime("%Y-%m-%d_%H:%M:%S"))
-    borg_create = "export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes && /usr/bin/borg create --compression lz4 -v --stats %s::%s-%s %s %s" % (repository, host_name, date, " ".join(backup_include_default + backup_include), " --exclude ".join(backup_exclude_default + backup_exclude))
+    borg_create = "export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes && /usr/bin/borg create --compression %s -v --stats %s::%s-%s %s %s" % (COMPRESSION, repository, host_name, date, " ".join(backup_include_default + backup_include), " --exclude ".join(backup_exclude_default + backup_exclude))
     borg_prune = "export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes && /usr/bin/borg prune -v --list --keep-hourly=2 %s --prefix %s --keep-daily 7 --keep-weekly 4 --keep-monthly 6" % (repository, host_name)
 
     connect_ssh(host_address, SERVER_SSH_PORT, BORG_SSH_PORT, client_username, client_password, borg_create)
