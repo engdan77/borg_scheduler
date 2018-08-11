@@ -41,8 +41,9 @@ RUN chown -R appuser /borg
 
 RUN passwd -d 'root' appuser
 
-USER appuser
+# USER appuser
 COPY ssh_config /home/appuser/.ssh/config
+RUN chown -R appuser /home/appuser
 
 EXPOSE 22
 
