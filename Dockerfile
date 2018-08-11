@@ -39,7 +39,7 @@ RUN pip install -r requirements.txt
 RUN mkdir -p /borg
 RUN chown -R appuser /borg
 
-RUN passwd -d 'root' appuser
+RUN echo appuser:root | chpasswd
 
 # USER appuser
 COPY ssh_config /home/appuser/.ssh/config
