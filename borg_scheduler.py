@@ -18,6 +18,7 @@ BORG_SSH_PORT = os.environ.get('BORG_SSH_PORT', 9922)
 SERVER_USERNAME = os.environ.get('SERVER_USERNAME', 'appuser')
 BASE_REPO = os.environ.get('BASE_REPO', "/borg")
 MINUTES_BETWEEN_BACKUPS = 1440
+PEXPECT_TIMEOUT_SECONDS = 21600
 
 backup_include_default = []
 backup_exclude_default = []
@@ -68,7 +69,7 @@ def connect_ssh(host_address, ssh_port, borg_ssh_port, ssh_username, password, c
     """
     ssh_cmd = '/usr/bin/ssh %s@%s -p %s -R %s:localhost:%s "%s"' % (ssh_username, host_address, ssh_port, borg_ssh_port, ssh_port, cmd)
     logger.debug(f'~cmd: {ssh_cmd}')
-    output = pexpect.run(ssh_cmd, events={'(?i)Password:': password + '\n', '(?i)yes/no': 'yes\n'})
+    output = pexpect.run(ssh_cmd, timeout=PEXPECT_TIMEOUT_SECONDS, events={'(?i)Password:': password + '\n', '(?i)yes/no': 'yes\n'})
     logger.debug(f'~output: {output}')
     if 'No such file' in str(output):
         logger.error(f'~no borg in /usr/bin/borg please install before proceeding')
