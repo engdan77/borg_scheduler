@@ -34,7 +34,7 @@ default_backup_list = [{'name': 'server1',
 
 
 def exception_listener(event):
-    """This method is for catching exception and produce logs in apscheduler.
+    """This function is for catching exception and produce logs in apscheduler.
 
     :param event:
     :return:
@@ -59,7 +59,7 @@ def get_backup_list():
 
 
 def connect_ssh(host_address, ssh_port, borg_ssh_port, ssh_username, password, cmd):
-    """Method for connecting to client and process output by using pexpect.
+    """Function for connecting to client and process output by using pexpect.
 
     :param host_address:
     :param ssh_port:
@@ -79,7 +79,7 @@ def connect_ssh(host_address, ssh_port, borg_ssh_port, ssh_username, password, c
 
 
 def ssh_copy_id(client_username, server_username, host_address, server_ssh_port, client_password):
-    """Method for automaticalyy copying the ssh_key to the client for allowing borg to backup over ssh.
+    """Function for automatically copying the ssh_key to the client for allowing borg to backup over ssh.
 
     :param client_username:
     :param server_username:
@@ -128,7 +128,7 @@ def prepare_folder(folder):
 
 
 def prepare_client(folder, client_username, server_username, host_address, server_ssh_port, client_password):
-    """Method for preparing the client machine before connection.
+    """Function for preparing the client machine before connection.
 
     :param folder:
     :param client_username:
@@ -143,7 +143,7 @@ def prepare_client(folder, client_username, server_username, host_address, serve
 
 
 def backup(host_name, host_address, backup_include, backup_exclude, client_username, client_password):
-    """Backup method used for initiate a backup using borg.
+    """Backup function used for initiate a backup using borg.
 
     :param host_name:
     :param host_address:
@@ -163,6 +163,10 @@ def backup(host_name, host_address, backup_include, backup_exclude, client_usern
 
 
 def show_user():
+    """
+    Function for displaying current user
+    :return:
+    """
     output = pexpect.run('whoami')
     logger.info(f'~running as user {output}')
 
