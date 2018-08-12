@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """borg_scheduler: Small project for scheduling Borg backups."""
 
 __author__      = "Daniel Engvall"
@@ -55,6 +54,7 @@ def get_backup_list():
         json.dump(default_backup_list, open(conf_file, 'w'), indent=4)
     with open(conf_file, 'r') as f:
         config = json.load(f)
+    logger.info(f'~loading config {config}')
     return config
 
 
@@ -155,7 +155,12 @@ def backup(host_name, host_address, backup_include, backup_exclude, client_usern
     """
     repository = "ssh://%s@localhost:%s/%s" % (SERVER_USERNAME, BORG_SSH_PORT, f'{BASE_REPO}/{host_name}')
     date = str(time.strftime("%Y-%m-%d_%H:%M:%S"))
-    borg_create = ''.join("export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes && /usr/bin/borg create --compression %s -v --stats %s::%s-%s %s %s" % (COMPRESSION, repository, host_name, date, " ".join(backup_include_default + backup_include), " --exclude ".join(backup_exclude_default + backup_exclude)))
+    excludes = backup_exclude_default + backup_exclude
+    exclude_args = '--exclude '.join(excludes)
+    if len(excludes) > 0:
+        exclude_args = f'--exclude {exclude_args}'
+    borg_create = "export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes && /usr/bin/borg create --compression %s -v --stats %s::%s-%s %s %s" % (COMPRESSION, repository, host_name, date, " ".join(backup_include_default + backup_include), exclude_args)
+    logger.info(borg_create)
     borg_prune = "export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes && /usr/bin/borg prune -v --list --keep-hourly=2 %s --prefix %s --keep-daily 7 --keep-weekly 4 --keep-monthly 6" % (repository, host_name)
 
     connect_ssh(host_address, SERVER_SSH_PORT, BORG_SSH_PORT, client_username, client_password, borg_create)
@@ -186,6 +191,7 @@ if __name__ == '__main__':
 
     for c in backup_list:
         backup_args = (c['name'], c['address'], c['backup_dirs'], c['exclude_dirs'], c['username'], c['password'])
+        logger.info(f'~making backup for {c}')
         backup(*backup_args)
         scheduler.add_job(backup, 'interval', args=backup_args, minutes=MINUTES_BETWEEN_BACKUPS, id=f'job_{c["name"]}')
     scheduler.start()
