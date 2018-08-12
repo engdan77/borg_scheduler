@@ -5,8 +5,10 @@ LABEL maintainer="Daniel Engvall"
 ENV ROOT_PASSWORD root
 
 # Update according to local environment or use --build-arg UID=xxx at build
-ENV UID 1004
-ENV GID 100
+ARG UID=1004
+ARG GID=100
+# ENV UID 1004
+# ENV GID 100
 
 RUN adduser -u ${UID} -D -g '' appuser
 
@@ -16,6 +18,8 @@ RUN apk update	&& apk upgrade && apk add bash && apk add openssh \
 		&& rm -rf /var/cache/apk/* /tmp/*
 
 RUN apk add supervisor
+
+RUN apk add sudo
 
 RUN mkdir /etc/supervisor.d; \
     mkdir /etc/init-scripts; \

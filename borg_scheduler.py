@@ -162,8 +162,15 @@ def backup(host_name, host_address, backup_include, backup_exclude, client_usern
     connect_ssh(host_address, SERVER_SSH_PORT, BORG_SSH_PORT, client_username, client_password, borg_prune)
 
 
+def show_user():
+    output = pexpect.run('whoami')
+    logger.info(f'~running as user {output}')
+
+
 if __name__ == '__main__':
     logger.info('~starting borg_scheduler')
+    show_user()
+
     scheduler = BlockingScheduler(timezone='Europe/Stockholm')
     scheduler.add_listener(exception_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     backup_list = get_backup_list()
